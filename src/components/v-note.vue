@@ -15,9 +15,9 @@
             </div>
             <div class="invisible">
                 <label>
-                    <input type="text">
+                    <input id="textTodo" type="text">
                 </label>
-                <button>соранить</button>
+                <button @click="createNewTodo(NOTE.id)">соранить</button>
                 <button @click="cancel">отменить</button>
             </div>
         </div>
@@ -26,7 +26,8 @@
 </template>
 
 <script>
-    import {mapGetters} from 'vuex'
+
+    import {mapGetters, mapActions} from 'vuex'
 
     export default {
         name: "v-note",
@@ -44,20 +45,31 @@
         },
 
         methods: {
+            ...mapActions([
+                'CREATE_NEW_TODO'
+            ]),
             completed (event) {
-                let checbox = event.target;
-                if (checbox.checked) {
+                let checkbox = event.target;
+                if (checkbox.checked) {
                     event.target.parentNode.childNodes[0].classList.add('completed')
                 } else {
                     event.target.parentNode.childNodes[0].classList.remove('completed')
                 }
             },
             newTodo (event) {
-                console.log(event.target.style);
                 event.target.style = 'display: none';
                 document.querySelector('.invisible').style = 'display: block';
             },
             cancel () {
+                document.querySelector('.invisible').style = 'display: none';
+                document.querySelector('.addTodo').style = 'display: true';
+            },
+            createNewTodo (id) {
+                let textTodo = document.querySelector('#textTodo');
+                if (textTodo.value) {
+                    this.CREATE_NEW_TODO({id: id, text: textTodo.value})
+                }
+                textTodo.placeholder = 'Введите текст';
                 document.querySelector('.invisible').style = 'display: none';
                 document.querySelector('.addTodo').style = 'display: true';
             }

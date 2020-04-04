@@ -69,6 +69,13 @@ let store = new Vuex.Store({
                 i++;
             }
         },
+        CREATE_NEW_TODO: (state, params) => {
+            for (let note of state.notes) {
+                if (note.id === params.id) {
+                    note.todo.push(params.text);
+                }
+            }
+        }
     },
 
     actions: {
@@ -77,6 +84,9 @@ let store = new Vuex.Store({
         },
         DELETE_NOTE({commit}) {
             commit('DELETE_NOTE')
+        },
+        CREATE_NEW_TODO({commit}, params) {
+            commit('CREATE_NEW_TODO', params)
         }
     },
     getters: {
