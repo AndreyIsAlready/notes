@@ -75,26 +75,32 @@ let store = new Vuex.Store({
                     note.todo.push(params.text);
                 }
             }
+        },
+        NEW_NOTE: (state) => {
+            state.note = {};
         }
     },
 
     actions: {
         NOTE({commit}, id) {
-            commit('FIND_NOTE', id)
+            commit('FIND_NOTE', id);
         },
         DELETE_NOTE({commit}) {
-            commit('DELETE_NOTE')
+            commit('DELETE_NOTE');
         },
         CREATE_NEW_TODO({commit}, params) {
-            commit('CREATE_NEW_TODO', params)
+            commit('CREATE_NEW_TODO', params);
+        },
+        NEW_NOTE({commit}) {
+            commit('NEW_NOTE');
         }
     },
     getters: {
         NOTES(state) {
-            return state.notes
+            return state.notes;
         },
         NOTE(state) {
-            return state.note
+            return state.note;
         }
     }
 });

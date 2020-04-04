@@ -2,7 +2,7 @@
     <div class="v-notes">
         <vAskWindow class="v-ask-window"></vAskWindow>
         <router-link class="link" :to="{name: 'note'}">
-            <button class ="btn">{{newNotes}}</button>
+            <button class ="btn" @click="newNote">{{newNotes}}</button>
         </router-link>
         <div class="container">
             <vItems
@@ -18,7 +18,7 @@
 
     import vItems from './v-items'
     import vAskWindow from './v-ask-window'
-    import {mapGetters} from 'vuex'
+    import {mapGetters, mapActions} from 'vuex'
 
     export default {
         name: "v-notes",
@@ -37,6 +37,14 @@
                'NOTES'
            ])
         },
+        methods: {
+            ...mapActions([
+                'NEW_NOTE'
+            ]),
+            newNote() {
+                this.NEW_NOTE();
+            }
+        }
     }
 </script>
 

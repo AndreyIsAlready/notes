@@ -1,5 +1,5 @@
 <template>
-    <div class="vNote">
+    <div class="vNote" v-if="NOTE.id">
         <b><p>{{NOTE.title}}</p></b>
         <div class="container">
             <div
@@ -15,22 +15,28 @@
             </div>
             <div class="invisible">
                 <label>
-                    <input id="textTodo" type="text">
+                    <input id="textTodo" type="text" @keydown.enter="createNewTodo(NOTE.id)">
                 </label>
                 <button @click="createNewTodo(NOTE.id)">соранить</button>
                 <button @click="cancel">отменить</button>
             </div>
         </div>
-        <button class="addTodo" @click="newTodo">Добавить заметку</button>
+        <button class="addTodo" @click="newTodo">Добавить запись</button>
     </div>
+    <vNewNote v-else/>
 </template>
 
 <script>
 
+    import vNewNote from './v-new-note'
     import {mapGetters, mapActions} from 'vuex'
 
     export default {
         name: "v-note",
+
+        components: {
+            vNewNote
+        },
 
         props: {},
 
@@ -51,10 +57,11 @@
             completed (event) {
                 let checkbox = event.target;
                 if (checkbox.checked) {
-                    event.target.parentNode.childNodes[0].classList.add('completed')
-                } else {
-                    event.target.parentNode.childNodes[0].classList.remove('completed')
+                    event.target.parentNode.childNodes[0].classList.add('completed');
+                    return
                 }
+
+                event.target.parentNode.childNodes[0].classList.remove('completed')
             },
             newTodo (event) {
                 event.target.style = 'display: none';
@@ -66,14 +73,16 @@
             },
             createNewTodo (id) {
                 let textTodo = document.querySelector('#textTodo');
+
                 if (textTodo.value) {
                     this.CREATE_NEW_TODO({id: id, text: textTodo.value})
                 }
+
                 textTodo.placeholder = 'Введите текст';
                 document.querySelector('.invisible').style = 'display: none';
                 document.querySelector('.addTodo').style = 'display: true';
             }
-        }
+        },
     }
 </script>
 
