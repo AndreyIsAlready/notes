@@ -13,6 +13,13 @@
                 </label>
                 <button>редактировать</button>
             </div>
+            <div class="invisible">
+                <label>
+                    <input type="text">
+                </label>
+                <button>соранить</button>
+                <button @click="cancel">отменить</button>
+            </div>
         </div>
         <button class="addTodo" @click="newTodo">Добавить заметку</button>
     </div>
@@ -46,10 +53,13 @@
                 }
             },
             newTodo (event) {
-                event.target.disabled = true;
-                let container = document.querySelector('.container');
-                let newTodo = document.createElement('input');
-                container.appendChild(newTodo);
+                console.log(event.target.style);
+                event.target.style = 'display: none';
+                document.querySelector('.invisible').style = 'display: block';
+            },
+            cancel () {
+                document.querySelector('.invisible').style = 'display: none';
+                document.querySelector('.addTodo').style = 'display: true';
             }
         }
     }
@@ -58,6 +68,10 @@
 <style scoped>
     .vNote{
         border: 3px solid gray;
+    }
+    .container{
+        display: grid;
+        grid-row-gap: 10px;
     }
     .completed{
         text-decoration: line-through;
@@ -73,5 +87,9 @@
     .addTodo:active{
         width: 290px;
         height: 28px;
+    }
+    .invisible{
+        display: none;
+        margin: 10px;
     }
 </style>
