@@ -5,12 +5,13 @@
             <div class="titleNote">
                 <h2 class="heading">Название заметки</h2>
 
-                <label>
+                <label class="titleForm">
                     <input type="text" class="text" v-model="text" @keydown.enter="addTitle">
+                    <button @click="addTitle">добавить</button>
                 </label>
                 <div class="titleValue">
-                    <h3 id="title">{{text}}</h3>
-                    <button @click="editTitle">редактировать</button>
+                    <h3 class="word" id="title">{{text}}</h3>
+                    <button @click="editTitle">редактировать название заметки</button>
                 </div>
 
             </div>
@@ -55,7 +56,7 @@
 
                 let div = document.querySelector('.todos');
                 let p = document.createElement('p');
-
+                p.classList.add('word');
                 p.innerHTML = input.value;
                 input.value = '';
                 div.appendChild(p);
@@ -68,16 +69,16 @@
                     return
                 }
 
-                text.style = 'display: none';
+                document.querySelector('.titleForm').style = 'display: none';
                 document.querySelector('.titleValue').style = 'display: block';
             },
             editTitle() {
-                document.querySelector('.text').style = 'display: true';
+                document.querySelector('.titleForm').style = 'display: true';
                 document.querySelector('.titleValue').style = 'display: none';
             },
             save() {
-                let todosTag = document.querySelector('.todos').querySelectorAll('p');
                 let title = document.querySelector('#title').innerHTML;
+                let todosTag = document.querySelector('.todos').querySelectorAll('p');
                 let todo = [];
 
                 for (let item of todosTag) {
@@ -92,7 +93,7 @@
                 let json = JSON.stringify(newNote);
                 localStorage.setItem(String(newNote.id), json);
                 this.ADD_NEW_NOTE(newNote);
-            }
+            },
         },
     }
 </script>
@@ -127,5 +128,8 @@
     .buttonSave:active{
         background: black;
         border: 2px solid black;
+    }
+    .word{
+        white-space: normal;
     }
 </style>

@@ -13,12 +13,18 @@ let store = new Vuex.Store({
 
     mutations: {
         GET_ALL_NOTES: (state) => {
+            let keys = [];
             for (let key of Object.keys(localStorage)) {
                 if (!isNaN(key)) {
-                    state.notes.push(JSON.parse(localStorage.getItem(key)))
+                    keys.push(key);
                 }
             }
-            console.log(state.notes)
+
+            keys.sort((a, b) => b-a);
+
+            for (let key of keys) {
+                state.notes.push(JSON.parse(localStorage.getItem(key)))
+            }
         },
         FIND_NOTE: (state, id) => {
             for (let note of state.notes) {
@@ -31,9 +37,8 @@ let store = new Vuex.Store({
             let i = 0;
             for (let note of state.notes) {
                 if (note.id === state.note.id) {
-                    console.log(state.notes.length);
                     state.notes.splice(i, 1);
-                    console.log(state.notes.length);
+                    localStorage.removeItem(note.id);
                 }
                 i++;
             }
