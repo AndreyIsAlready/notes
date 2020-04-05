@@ -27,7 +27,7 @@
 
 <script>
 
-    import {mapGetters} from 'vuex'
+    import {mapGetters, mapActions} from 'vuex'
 
     export default {
         name: "v-new-note",
@@ -42,6 +42,9 @@
             ]),
         },
         methods:{
+            ...mapActions([
+               'ADD_NEW_NOTE'
+            ]),
             addTodo() {
                 let input = document.querySelector('.todo');
 
@@ -80,15 +83,17 @@
                 for (let item of todosTag) {
                     todo.push(item.innerHTML);
                 }
-                console.log(this.LAST_ID);
-                console.log(title);
-                console.log(todo)
 
+                let newNote = {
+                    id: (+this.LAST_ID + 1),
+                    title: title,
+                    todo: todo
+                };
+                let json = JSON.stringify(newNote);
+                localStorage.setItem(String(newNote.id), json);
+                this.ADD_NEW_NOTE(newNote);
             }
         },
-        mounted() {
-            console.log('hello');
-        }
     }
 </script>
 

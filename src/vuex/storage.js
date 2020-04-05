@@ -8,40 +8,18 @@ let store = new Vuex.Store({
 
         note:{},
 
-        notes: [
-            {
-                id:1,
-                title: 'Бизнес план',
-                todo: [
-                    'пернуть',
-                    'Начать на этом зарабатывать',
-                    'жопа',
-                    'хуй'
-                ]
-            },
-            {
-                id: 2,
-                title: 'Получение денег',
-                todo: [
-                    'пернуть',
-                    'Начать продвигать это в массы',
-                    'кайфовать',
-                    'еще че нибудь'
-                ]
-            },
-            {
-                id:3,
-                title: 'Допилить',
-                todo: [
-                    'собраться',
-                    'порабоать',
-                    'кайфовать',
-                ]
-            },
-        ]
+        notes: []
     },
 
     mutations: {
+        GET_ALL_NOTES: (state) => {
+            for (let key of Object.keys(localStorage)) {
+                if (!isNaN(key)) {
+                    state.notes.push(JSON.parse(localStorage.getItem(key)))
+                }
+            }
+            console.log(state.notes)
+        },
         FIND_NOTE: (state, id) => {
             for (let note of state.notes) {
                 if (note.id === id) {
@@ -69,10 +47,17 @@ let store = new Vuex.Store({
         },
         NEW_NOTE: (state) => {
             state.note = {};
+        },
+        ADD_NEW_NOTE: (state, newNote) => {
+            state.notes.push(newNote);
+            state.note = newNote;
         }
     },
 
     actions: {
+        GET_ALL_NOTES({commit}) {
+            commit('GET_ALL_NOTES');
+        },
         NOTE({commit}, id) {
             commit('FIND_NOTE', id);
         },
@@ -84,6 +69,9 @@ let store = new Vuex.Store({
         },
         NEW_NOTE({commit}) {
             commit('NEW_NOTE');
+        },
+        ADD_NEW_NOTE({commit}, newNote) {
+            commit('ADD_NEW_NOTE', newNote);
         }
     },
     getters: {

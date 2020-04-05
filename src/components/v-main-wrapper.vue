@@ -8,8 +8,19 @@
 </template>
 
 <script>
+
+    import {mapActions} from 'vuex'
+
     export default {
-        name: "v-main-wrapper"
+        name: "v-main-wrapper",
+        methods: {
+            ...mapActions([
+                'GET_ALL_NOTES'
+            ]),
+        },
+        mounted() {
+            this.GET_ALL_NOTES();
+        }
     }
 </script>
 
