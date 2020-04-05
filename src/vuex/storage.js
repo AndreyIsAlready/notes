@@ -92,6 +92,18 @@ let store = new Vuex.Store({
         },
         NOTE(state) {
             return state.note;
+        },
+        /**
+         * @return {number}
+         */
+        LAST_ID(state) {
+            let id = 0;
+            for (let note of state.notes) {
+                if (id < note.id) {
+                    id = note.id
+                }
+            }
+            return id;
         }
     }
 });

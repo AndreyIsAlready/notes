@@ -4,9 +4,15 @@
         <div class="container">
             <div class="titleNote">
                 <h2 class="heading">Название заметки</h2>
+
                 <label>
-                    <input type="text" class="text" @keydown.enter="addTitle">
+                    <input type="text" class="text" v-model="text" @keydown.enter="addTitle">
                 </label>
+                <div class="titleValue">
+                    <h3 id="title">{{text}}</h3>
+                    <button @click="editTitle">редактировать</button>
+                </div>
+
             </div>
             <h2 class="heading">todo</h2>
             <div class="todos"></div>
@@ -15,12 +21,26 @@
                 <button @click="addTodo">добавить</button>
             </label>
         </div>
+        <button class="buttonSave" @click="save">соранить</button>
     </div>
 </template>
 
 <script>
+
+    import {mapGetters} from 'vuex'
+
     export default {
         name: "v-new-note",
+        data() {
+            return {
+                text:'',
+            }
+        },
+        computed: {
+            ...mapGetters([
+                'LAST_ID'
+            ]),
+        },
         methods:{
             addTodo() {
                 let input = document.querySelector('.todo');
@@ -33,24 +53,36 @@
                 let div = document.querySelector('.todos');
                 let p = document.createElement('p');
 
-                p.innerHTML = '-' + document.querySelector('.todo').value;
+                p.innerHTML = input.value;
+                input.value = '';
                 div.appendChild(p);
             },
             addTitle() {
                 let text = document.querySelector('.text');
+                
                 if (!text.value.length) {
                     text.placeholder = 'Введите текст';
                     return
                 }
+
                 text.style = 'display: none';
+                document.querySelector('.titleValue').style = 'display: block';
+            },
+            editTitle() {
+                document.querySelector('.text').style = 'display: true';
+                document.querySelector('.titleValue').style = 'display: none';
+            },
+            save() {
+                let todosTag = document.querySelector('.todos').querySelectorAll('p');
+                let title = document.querySelector('#title').innerHTML;
+                let todo = [];
 
-                let h3 = document.createElement('h3');
-
-                h3.innerHTML = text.value;
-
-                let title = document.querySelector('.titleNote');
-
-                title.appendChild(h3);
+                for (let item of todosTag) {
+                    todo.push(item.innerHTML);
+                }
+                console.log(this.LAST_ID);
+                console.log(title);
+                console.log(todo)
 
             }
         },
@@ -73,5 +105,22 @@
     }
     .heading{
         color: #63806e;
+    }
+    .titleValue{
+        display: none;
+    }
+    .buttonSave{
+        margin: 1%;
+        background: #298060;
+        border: 2px solid #298060;
+        width: 400px;
+        height: 35px;
+        border-radius: 5px;
+        color: white;
+        font-size: 25px;
+    }
+    .buttonSave:active{
+        background: black;
+        border: 2px solid black;
     }
 </style>
