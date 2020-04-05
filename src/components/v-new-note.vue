@@ -82,7 +82,7 @@
                 let todo = [];
 
                 for (let item of todosTag) {
-                    todo.push(item.innerHTML);
+                    todo.push([item.innerHTML, false]);
                 }
 
                 let newNote = {

@@ -5,7 +5,7 @@
                 v-for="(todo, index) in note_data.todo"
                 :key="index"
         >
-            <span class="text" v-if="index < 3">-{{todo}}</span>
+            <span class="text" v-if="index < 3">-{{todo[0]}}</span>
             <label v-if="index < 3">
                 <input disabled type="checkbox">
             </label>
@@ -38,15 +38,15 @@
         methods: {
 
             ...mapActions([
-                'NOTE'
+                'FIND_NOTE'
             ]),
 
             pageNote(id) {
-                this.NOTE(id)
+                this.FIND_NOTE(id)
             },
 
             remove(id) {
-                this.NOTE(id);
+                this.FIND_NOTE(id);
                 document.querySelector('.v-ask-window').style = 'display: grid'
             }
         }

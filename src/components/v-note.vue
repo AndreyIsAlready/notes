@@ -7,11 +7,16 @@
                     v-for="(todo, index) in NOTE.todo"
                     :key="index"
                 >
-                <label>
-                    <span>{{todo}}</span>
-                    <input @click="completed" type="checkbox">
+                <label v-if="todo[1]">
+                    <span>{{todo[0]}}</span>
+                    <input class="checkbox" @click="completed($event, index)" type="checkbox" checked>
                 </label>
-                <button>редактировать</button>
+                <label v-else>
+                    <span>{{todo[0]}}</span>
+                    <input class="checkbox" @click="completed($event, index)" type="checkbox">
+                </label>
+
+                <button @click="edit(index)">редактировать</button>
             </div>
             <div class="invisible">
                 <label>
@@ -52,10 +57,21 @@
 
         methods: {
             ...mapActions([
-                'CREATE_NEW_TODO'
+                'CREATE_NEW_TODO',
+                'TODO_IS_DONE',
+                'FIND_NOTE'
             ]),
-            completed (event) {
+            completed (event, index) {
+                console.log(index);
                 let checkbox = event.target;
+
+                let idsAndCheck = {
+                    id: index,
+                    isCheck:checkbox.checked
+                };
+
+                this.TODO_IS_DONE(idsAndCheck);
+
                 if (checkbox.checked) {
                     event.target.parentNode.childNodes[0].classList.add('completed');
                     return
@@ -75,14 +91,27 @@
                 let textTodo = document.querySelector('#textTodo');
 
                 if (textTodo.value) {
-                    this.CREATE_NEW_TODO({id: id, text: textTodo.value})
+                    this.CREATE_NEW_TODO({id: id, text: [textTodo.value, false]})
                 }
 
                 textTodo.placeholder = 'Введите текст';
                 document.querySelector('.invisible').style = 'display: none';
                 document.querySelector('.addTodo').style = 'display: true';
+            },
+            edit (index) {
+                console.log(index)
             }
         },
+        mounted() {
+            let checkboxs = document.querySelectorAll('.checkbox');
+
+            for (let checkBox of checkboxs) {
+                if (checkBox.checked) {
+                    console.log(checkBox.parentNode.childNodes[0]);
+                    checkBox.parentNode.childNodes[0].classList.add('completed');
+                }
+            }
+        }
     }
 </script>
 
