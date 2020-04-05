@@ -3,7 +3,7 @@
         <b><p class="title">{{note_data.title}}</p></b>
         <div
                 v-for="(todo, index) in note_data.todo"
-                :key="todo"
+                :key="index"
         >
             <span class="text" v-if="index < 3">-{{todo}}</span>
             <label v-if="index < 3">

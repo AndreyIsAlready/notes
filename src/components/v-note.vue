@@ -4,8 +4,8 @@
         <div class="container">
             <div
                     class="note"
-                    v-for="todo in NOTE.todo"
-                    :key="todo"
+                    v-for="(todo, index) in NOTE.todo"
+                    :key="index"
                 >
                 <label>
                     <span>{{todo}}</span>
@@ -21,7 +21,7 @@
                 <button @click="cancel">отменить</button>
             </div>
         </div>
-        <button class="addTodo" @click="newTodo">Добавить запись</button>
+        <button class="addTodo" @click="newTodo">Добавить todo</button>
     </div>
     <vNewNote v-else/>
 </template>

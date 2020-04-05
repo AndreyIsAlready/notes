@@ -1,7 +1,14 @@
 <template>
     <div class="v-new-note">
-        <p>Создайте новую заметку</p>
+        <h2 class="heading">Создайте новую заметку</h2>
         <div class="container">
+            <div class="titleNote">
+                <h2 class="heading">Название заметки</h2>
+                <label>
+                    <input type="text" class="text" @keydown.enter="addTitle">
+                </label>
+            </div>
+            <h2 class="heading">todo</h2>
             <div class="todos"></div>
             <label>
                 <input class="todo" @keydown.enter="addTodo" type="text">
@@ -26,8 +33,25 @@
                 let div = document.querySelector('.todos');
                 let p = document.createElement('p');
 
-                p.innerHTML = document.querySelector('.todo').value;
+                p.innerHTML = '-' + document.querySelector('.todo').value;
                 div.appendChild(p);
+            },
+            addTitle() {
+                let text = document.querySelector('.text');
+                if (!text.value.length) {
+                    text.placeholder = 'Введите текст';
+                    return
+                }
+                text.style = 'display: none';
+
+                let h3 = document.createElement('h3');
+
+                h3.innerHTML = text.value;
+
+                let title = document.querySelector('.titleNote');
+
+                title.appendChild(h3);
+
             }
         },
         mounted() {
@@ -43,5 +67,11 @@
     .container{
         border: 3px solid gray;
         padding: 10px;
+    }
+    .titleNote{
+        margin-bottom: 20px;
+    }
+    .heading{
+        color: #63806e;
     }
 </style>
