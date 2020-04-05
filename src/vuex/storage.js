@@ -69,6 +69,13 @@ let store = new Vuex.Store({
                     localStorage.setItem(state.note.id, JSON.stringify(state.note));
                 }
             }
+        },
+        EDIT_NOTE: (state, idAndTodo) => {
+            for (let note of state.notes) {
+                if (note.id === idAndTodo.id) {
+                    note.todo = idAndTodo.todo
+                }
+            }
         }
     },
 
@@ -93,6 +100,9 @@ let store = new Vuex.Store({
         },
         TODO_IS_DONE({commit}, index) {
             commit('TODO_IS_DONE', index);
+        },
+        EDIT_NOTE({commit}, idAndTodo) {
+            commit('EDIT_NOTE', idAndTodo);
         }
     },
     getters: {

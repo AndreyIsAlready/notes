@@ -1,32 +1,37 @@
 <template>
     <div class="vNote" v-if="NOTE.id">
-        <b><p>{{NOTE.title}}</p></b>
-        <div class="container">
-            <div
-                    class="note"
-                    v-for="(todo, index) in NOTE.todo"
-                    :key="index"
-                >
-                <label v-if="todo[1]">
-                    <span>{{todo[0]}}</span>
-                    <input class="checkbox" @click="completed($event, index)" type="checkbox" checked>
-                </label>
-                <label v-else>
-                    <span>{{todo[0]}}</span>
-                    <input class="checkbox" @click="completed($event, index)" type="checkbox">
-                </label>
+        <div class="big-container">
+            <b><p>{{NOTE.title}}</p></b>
+            <div class="container">
+                <div
+                        class="note"
+                        v-for="(todo, index) in NOTE.todo"
+                        :key="index"
+                    >
+                    <label v-if="todo[1]">
+                        <span>{{todo[0]}}</span>
+                        <input class="checkbox" @click="completed($event, index)" type="checkbox" checked>
+                    </label>
+                    <label v-else>
+                        <span>{{todo[0]}}</span>
+                        <input class="checkbox" @click="completed($event, index)" type="checkbox">
+                    </label>
 
-                <button @click="edit(index)">редактировать</button>
+                    <button @click="edit(index)">редактировать</button>
+                </div>
+                <div class="invisible">
+                    <label>
+                        <input id="textTodo" type="text" @keydown.enter="createNewTodo(NOTE.id)">
+                    </label>
+                    <button @click="createNewTodo(NOTE.id)">соранить</button>
+                    <button @click="cancel">отменить</button>
+                </div>
             </div>
-            <div class="invisible">
-                <label>
-                    <input id="textTodo" type="text" @keydown.enter="createNewTodo(NOTE.id)">
-                </label>
-                <button @click="createNewTodo(NOTE.id)">соранить</button>
-                <button @click="cancel">отменить</button>
-            </div>
+            <button class="addTodo" @click="newTodo">Добавить todo</button>
         </div>
-        <button class="addTodo" @click="newTodo">Добавить todo</button>
+        <router-link :to="{name: 'notes'}">
+            <button class="buttonSave" @click="save">сохранить</button>
+        </router-link>
     </div>
     <vNewNote v-else/>
 </template>
@@ -59,7 +64,8 @@
             ...mapActions([
                 'CREATE_NEW_TODO',
                 'TODO_IS_DONE',
-                'FIND_NOTE'
+                'FIND_NOTE',
+                'EDIT_NOTE'
             ]),
             completed (event, index) {
                 console.log(index);
@@ -98,25 +104,44 @@
                 document.querySelector('.invisible').style = 'display: none';
                 document.querySelector('.addTodo').style = 'display: true';
             },
+            save () {
+                let todo = this.NOTE.todo;
+                let i = 0;
+                let checkboxs = document.querySelectorAll('.checkbox');
+                for (let checkbox of checkboxs) {
+                    todo[i][1] = checkbox.checked;
+                    i++
+                }
+
+                let note = {
+                    id: this.NOTE.id,
+                    title: this.NOTE.title,
+                    todo: todo
+                };
+                let json = JSON.stringify(note);
+                localStorage.removeItem(String(note.id));
+                localStorage.setItem(String(note.id), json);
+                this.EDIT_NOTE({id: note.id, todo:note.todo});
+            },
             edit (index) {
                 console.log(index)
             }
         },
-        mounted() {
-            let checkboxs = document.querySelectorAll('.checkbox');
+        updated() {
+                let checkboxs = document.querySelectorAll('.checkbox');
 
-            for (let checkBox of checkboxs) {
-                if (checkBox.checked) {
-                    console.log(checkBox.parentNode.childNodes[0]);
-                    checkBox.parentNode.childNodes[0].classList.add('completed');
+                for (let checkBox of checkboxs) {
+                    if (checkBox.checked) {
+                        checkBox.parentNode.childNodes[0].classList.add('completed');
+                    }
                 }
-            }
+                console.log(1)
         }
     }
 </script>
 
 <style scoped>
-    .vNote{
+    .big-container{
         border: 3px solid gray;
     }
     .container{
@@ -141,5 +166,19 @@
     .invisible{
         display: none;
         margin: 10px;
+    }
+    .buttonSave{
+        margin: 1%;
+        background: #298060;
+        border: 2px solid #298060;
+        width: 400px;
+        height: 35px;
+        border-radius: 5px;
+        color: white;
+        font-size: 25px;
+    }
+    .buttonSave:active{
+        background: black;
+        border: 2px solid black;
     }
 </style>
