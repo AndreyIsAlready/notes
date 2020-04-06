@@ -45,11 +45,7 @@ let store = new Vuex.Store({
             }
         },
         CREATE_NEW_TODO: (state, params) => {
-            for (let note of state.notes) {
-                if (note.id === params.id) {
-                    note.todo.push(params.text);
-                }
-            }
+            state.note.todo.push(params.text);
         },
         NEW_NOTE: (state) => {
             state.note = {};
@@ -77,6 +73,12 @@ let store = new Vuex.Store({
         },
         REMOVE_EDIT_NOTE: (state) => {
             state.note.todo = JSON.parse(localStorage.getItem('note')).todo;
+        },
+        SET_OLD_NOTE: (state) => {
+            state.note = JSON.parse(localStorage.getItem('oldNote'));
+        },
+        DELETE_TODO: (state, index) => {
+            state.note.todo.splice(index, 1);
         }
     },
 
@@ -107,6 +109,12 @@ let store = new Vuex.Store({
         },
         REMOVE_EDIT_NOTE({commit}) {
             commit('REMOVE_EDIT_NOTE');
+        },
+        SET_OLD_NOTE({commit}) {
+            commit('SET_OLD_NOTE');
+        },
+        DELETE_TODO({commit}, index) {
+            commit('DELETE_TODO', index)
         }
     },
     getters: {

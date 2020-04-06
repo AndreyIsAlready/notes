@@ -9,16 +9,22 @@
                         v-for="(todo, index) in NOTE.todo"
                         :key="index"
                     >
-                    <label v-if="todo[1]">
-                        <span class="CancelEditSpan">{{todo[0]}}</span>
-                        <input class="checkbox CancelEditCheckbox" @click="completed($event, index)" type="checkbox" checked>
+                    <label class="input" @keydown.enter="editSpan($event, index)">
+                        <input type="text">
                     </label>
-                    <label v-if="!todo[1]">
-                        <span class="CancelEditSpan">{{todo[0]}}</span>
-                        <input class="checkbox CancelEditCheckbox" @click="completed($event, index)" type="checkbox">
-                    </label>
+                    <div class="label">
+                        <label v-if="todo[1]">
+                            <span class="CancelEditSpan">{{todo[0]}}</span>
+                            <input class="checkbox CancelEditCheckbox" @click="completed($event, index)" type="checkbox" checked>
+                        </label>
+                        <label v-if="!todo[1]">
+                            <span class="CancelEditSpan">{{todo[0]}}</span>
+                            <input class="checkbox CancelEditCheckbox" @click="completed($event, index)" type="checkbox">
+                        </label>
 
-                    <button @click="edit(index)">редактировать</button>
+                        <button @click="edit(index)">редактировать</button>
+                        <button class="deleteTodo" @click="deleteTodo(index)">удалить</button>
+                    </div>
                 </div>
                 <div class="invisible">
                     <label>
@@ -31,8 +37,8 @@
             <button class="addTodo" @click="newTodo">Добавить todo</button>
         </div>
             <button class="buttonSave" @click="save">сохранить</button>
-            <button class="buttonSave" @click="removeEditNote">отменить редактирование</button>
-            <button class="buttonSave" @click="getEditNote">вернуть изменения</button>
+            <button id="removeEditNote" class="buttonSave" @click="removeEditNote()">отменить редактирование</button>
+            <button id="editNote" class="buttonSave" disabled @click="getEditNote($event)">вернуть изменения</button>
             <button class="buttonSave" @click="remove(NOTE.id)" >удалить</button>
     </div>
     <vNewNote v-else/>
@@ -46,33 +52,30 @@
 
     export default {
         name: "v-note",
-
         components: {
             vNewNote,
             vAskWindow
         },
-
         props: {},
-
         data() {
             return {
                 note: this.NOTE
             };
         },
-
         computed: {
             ...mapGetters([
                 'NOTE'
             ])
         },
-
         methods: {
             ...mapActions([
                 'CREATE_NEW_TODO',
                 'FIND_NOTE',
                 'TODO_IS_DONE',
                 'EDIT_NOTE',
-                'REMOVE_EDIT_NOTE'
+                'REMOVE_EDIT_NOTE',
+                'SET_OLD_NOTE',
+                'DELETE_TODO'
             ]),
             completed (event, index) {
                 let checkbox = event.target;
@@ -119,11 +122,8 @@
                     i++
                 }
 
-                let note = {
-                    id: this.NOTE.id,
-                    title: this.NOTE.title,
-                    todo: todo
-                };
+                let note = this._createNote(this.NOTE.id, this.NOTE.title, todo);
+
                 let json = JSON.stringify(note);
                 localStorage.removeItem(String(note.id));
                 localStorage.setItem(String(note.id), json);
@@ -131,16 +131,19 @@
                 this.EDIT_NOTE({id: note.id, todo:note.todo});
             },
             removeEditNote () {
-                this.REMOVE_EDIT_NOTE();
                 let spanList = document.querySelectorAll('.CancelEditSpan');
                 let checkboxList = document.querySelectorAll('.CancelEditCheckbox');
                 let todo = [];
 
+                this.REMOVE_EDIT_NOTE();
+
                 for (let i = 0; i < spanList.length; i++) {
                     todo.push([spanList[i].innerHTML, checkboxList[i].checked]);
 
-                    spanList[i].innerHTML = this.NOTE.todo[i][0];
-                    checkboxList[i].checked = this.NOTE.todo[i][1];
+                    if (this.NOTE.todo[i]) {
+                        spanList[i].innerHTML = this.NOTE.todo[i][0];
+                        checkboxList[i].checked = this.NOTE.todo[i][1];
+                    }
 
                     if (checkboxList[i].checked) {
                         spanList[i].classList.add('completed');
@@ -150,25 +153,27 @@
                 }
 
 
-                let oldNote = JSON.stringify({
-                    title: this.NOTE.title,
-                    todo: todo
-                });
-
+                let oldNote = JSON.stringify( this._createNote(this.NOTE.id, this.NOTE.title, todo));
+                document.querySelector('#editNote').disabled = false;
                 localStorage.setItem('oldNote', oldNote);
             },
             remove(id) {
                 this.FIND_NOTE(id);
                 document.querySelector('.v-ask-window').style = 'display: grid';
             },
-            getEditNote() {
+            getEditNote(event) {
                 let spanList = document.querySelectorAll('.CancelEditSpan');
                 let checkboxList = document.querySelectorAll('.CancelEditCheckbox');
                 let note = JSON.parse(localStorage.getItem('oldNote'));
+                localStorage.setItem('oldNote', JSON.stringify(note));
+                this.SET_OLD_NOTE();
 
                 for (let i = 0; i < spanList.length; i++) {
-                    spanList[i].innerHTML = note.todo[i][0];
-                    checkboxList[i].checked = note.todo[i][1];
+
+                    if (note.todo[i]) {
+                        spanList[i].innerHTML = note.todo[i][0];
+                        checkboxList[i].checked = note.todo[i][1];
+                    }
 
                     if (checkboxList[i].checked) {
                         spanList[i].classList.add('completed');
@@ -176,10 +181,46 @@
                     }
                     spanList[i].classList.remove('completed');
                 }
+                event.target.disabled = true;
+                localStorage.removeItem('oldNote');
+            },
+            deleteTodo(index) {
+                this.DELETE_TODO(index)
             },
             edit (index) {
-                index;
-               // console.log(index)
+                document.querySelectorAll('.label')[index].style = 'display: none';
+                let input = document.querySelectorAll('.input')[index];
+
+                input.style = 'display: inline';
+                input.children[0].value = this.NOTE.todo[index][0];
+
+            },
+            editSpan (event, index) {
+                let label = document.querySelectorAll('.label')[index];
+                let spanList = document.querySelectorAll('.CancelEditSpan');
+                let checkboxList = document.querySelectorAll('.CancelEditCheckbox');
+
+                event.target.parentNode.style = 'display: none';
+                label.style = 'display: true';
+                let span = label.querySelector('span');
+                span.innerHTML = event.target.value;
+
+                let todo = [];
+
+                for (let i = 0; i < spanList.length; i++) {
+                    todo.push([spanList[i].innerHTML, checkboxList[i].checked])
+                }
+
+                let note = JSON.stringify(this._createNote(this.NOTE.id, this.NOTE.title, todo));
+                localStorage.setItem('note', note);
+                this.REMOVE_EDIT_NOTE();
+            },
+            _createNote(id, title, todo) {
+                return {
+                    id: id,
+                    title: title,
+                    todo: todo
+                };
             }
         },
         mounted() {
@@ -243,5 +284,11 @@
         width: 100%;
         height: 100%;
         background: rgba(0,0,0,0.6);
+    }
+    .deleteTodo{
+        margin-left: 10px;
+    }
+    .input{
+        display: none;
     }
 </style>
