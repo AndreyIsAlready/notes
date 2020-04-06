@@ -12,7 +12,7 @@
                         <span>{{todo[0]}}</span>
                         <input class="checkbox" @click="completed($event, index)" type="checkbox" checked>
                     </label>
-                    <label v-else>
+                    <label v-if="!todo[1]">
                         <span>{{todo[0]}}</span>
                         <input class="checkbox" @click="completed($event, index)" type="checkbox">
                     </label>
@@ -29,9 +29,8 @@
             </div>
             <button class="addTodo" @click="newTodo">Добавить todo</button>
         </div>
-        <router-link :to="{name: 'notes'}">
             <button class="buttonSave" @click="save">сохранить</button>
-        </router-link>
+            <button class="buttonSave" @click="removeEditNote">отменить редактирование</button>
     </div>
     <vNewNote v-else/>
 </template>
@@ -51,7 +50,9 @@
         props: {},
 
         data() {
-            return {};
+            return {
+                note: this.NOTE
+            };
         },
 
         computed: {
@@ -63,19 +64,20 @@
         methods: {
             ...mapActions([
                 'CREATE_NEW_TODO',
-                'TODO_IS_DONE',
                 'FIND_NOTE',
-                'EDIT_NOTE'
+                'TODO_IS_DONE',
+                'EDIT_NOTE',
+                'REMOVE_EDIT_NOTE'
             ]),
             completed (event, index) {
                 let checkbox = event.target;
 
-                let idsAndCheck = {
+                let idAndCheck = {
                     id: index,
-                    isCheck:checkbox.checked
+                    isCheck: checkbox.checked
                 };
 
-                this.TODO_IS_DONE(idsAndCheck);
+                this.TODO_IS_DONE(idAndCheck);
 
                 if (checkbox.checked) {
                     event.target.parentNode.childNodes[0].classList.add('completed');
@@ -121,7 +123,9 @@
                 localStorage.removeItem(String(note.id));
                 localStorage.setItem(String(note.id), json);
                 this.EDIT_NOTE({id: note.id, todo:note.todo});
-                location.href = '/'
+            },
+            removeEditNote () {
+                this.REMOVE_EDIT_NOTE();
             },
             edit (index) {
                 index;

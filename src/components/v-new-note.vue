@@ -93,6 +93,7 @@
                 };
                 let json = JSON.stringify(newNote);
                 localStorage.setItem(String(newNote.id), json);
+                localStorage.setItem('note', json);
                 this.ADD_NEW_NOTE(newNote);
             },
         },
