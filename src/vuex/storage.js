@@ -71,7 +71,7 @@ let store = new Vuex.Store({
         EDIT_NOTE: (state, idAndTodo) => {
             for (let note of state.notes) {
                 if (note.id === idAndTodo.id) {
-                    note.todo = idAndTodo.todo
+                    note.todo = idAndTodo.todo;
                 }
             }
         },

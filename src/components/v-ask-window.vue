@@ -2,7 +2,9 @@
     <div class="v-ask-window">
         <div class="window">
             <div>Вы уверены что хотите удалить?</div>
-            <div class="btn" @click="deleteNote">да</div>
+            <router-link :to="{name:'notes'}">
+                <div class="btn" @click="deleteNote">да</div>
+            </router-link>
             <div class="btn" @click="noDelete">нет</div>
         </div>
     </div>

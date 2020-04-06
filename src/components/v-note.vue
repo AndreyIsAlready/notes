@@ -1,5 +1,6 @@
 <template>
     <div class="vNote" v-if="NOTE.id">
+        <vAskWindow class="v-ask-window"></vAskWindow>
         <div class="big-container">
             <b><p>{{NOTE.title}}</p></b>
             <div class="container">
@@ -9,12 +10,12 @@
                         :key="index"
                     >
                     <label v-if="todo[1]">
-                        <span>{{todo[0]}}</span>
-                        <input class="checkbox" @click="completed($event, index)" type="checkbox" checked>
+                        <span class="CancelEditSpan">{{todo[0]}}</span>
+                        <input class="checkbox CancelEditCheckbox" @click="completed($event, index)" type="checkbox" checked>
                     </label>
                     <label v-if="!todo[1]">
-                        <span>{{todo[0]}}</span>
-                        <input class="checkbox" @click="completed($event, index)" type="checkbox">
+                        <span class="CancelEditSpan">{{todo[0]}}</span>
+                        <input class="checkbox CancelEditCheckbox" @click="completed($event, index)" type="checkbox">
                     </label>
 
                     <button @click="edit(index)">редактировать</button>
@@ -31,6 +32,8 @@
         </div>
             <button class="buttonSave" @click="save">сохранить</button>
             <button class="buttonSave" @click="removeEditNote">отменить редактирование</button>
+            <button class="buttonSave" @click="getEditNote">вернуть изменения</button>
+            <button class="buttonSave" @click="remove(NOTE.id)" >удалить</button>
     </div>
     <vNewNote v-else/>
 </template>
@@ -38,13 +41,15 @@
 <script>
 
     import vNewNote from './v-new-note'
+    import vAskWindow from './v-ask-window'
     import {mapGetters, mapActions} from 'vuex'
 
     export default {
         name: "v-note",
 
         components: {
-            vNewNote
+            vNewNote,
+            vAskWindow
         },
 
         props: {},
@@ -122,10 +127,55 @@
                 let json = JSON.stringify(note);
                 localStorage.removeItem(String(note.id));
                 localStorage.setItem(String(note.id), json);
+                localStorage.setItem('note', json);
                 this.EDIT_NOTE({id: note.id, todo:note.todo});
             },
             removeEditNote () {
                 this.REMOVE_EDIT_NOTE();
+                let spanList = document.querySelectorAll('.CancelEditSpan');
+                let checkboxList = document.querySelectorAll('.CancelEditCheckbox');
+                let todo = [];
+
+                for (let i = 0; i < spanList.length; i++) {
+                    todo.push([spanList[i].innerHTML, checkboxList[i].checked]);
+
+                    spanList[i].innerHTML = this.NOTE.todo[i][0];
+                    checkboxList[i].checked = this.NOTE.todo[i][1];
+
+                    if (checkboxList[i].checked) {
+                        spanList[i].classList.add('completed');
+                        continue
+                    }
+                    spanList[i].classList.remove('completed');
+                }
+
+
+                let oldNote = JSON.stringify({
+                    title: this.NOTE.title,
+                    todo: todo
+                });
+
+                localStorage.setItem('oldNote', oldNote);
+            },
+            remove(id) {
+                this.FIND_NOTE(id);
+                document.querySelector('.v-ask-window').style = 'display: grid';
+            },
+            getEditNote() {
+                let spanList = document.querySelectorAll('.CancelEditSpan');
+                let checkboxList = document.querySelectorAll('.CancelEditCheckbox');
+                let note = JSON.parse(localStorage.getItem('oldNote'));
+
+                for (let i = 0; i < spanList.length; i++) {
+                    spanList[i].innerHTML = note.todo[i][0];
+                    checkboxList[i].checked = note.todo[i][1];
+
+                    if (checkboxList[i].checked) {
+                        spanList[i].classList.add('completed');
+                        continue
+                    }
+                    spanList[i].classList.remove('completed');
+                }
             },
             edit (index) {
                 index;
@@ -186,5 +236,12 @@
     .buttonSave:active{
         background: black;
         border: 2px solid black;
+    }
+    .v-ask-window{
+        position: fixed;
+        z-index: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
     }
 </style>
