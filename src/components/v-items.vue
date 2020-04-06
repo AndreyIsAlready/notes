@@ -5,10 +5,20 @@
                 v-for="(todo, index) in note_data.todo"
                 :key="index"
         >
-            <span class="text" v-if="index < 3">-{{todo[0]}}</span>
-            <label v-if="index < 3">
-                <input disabled type="checkbox">
-            </label>
+            <div v-if="index < 3">
+                <div v-if="todo[1]">
+                    <span class="text line-through">-{{todo[0]}}</span>
+                    <label>
+                        <input disabled type="checkbox" checked>
+                    </label>
+                </div>
+                <div v-else>
+                    <span class="text">-{{todo[0]}}</span>
+                    <label>
+                        <input disabled type="checkbox">
+                    </label>
+                </div>
+            </div>
         </div>
 
         <router-link class="link" :to="{name: 'note'}">
@@ -81,5 +91,8 @@
 
     .text{
         color: gray;
+    }
+    .line-through{
+        text-decoration: line-through;
     }
 </style>

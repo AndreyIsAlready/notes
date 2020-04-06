@@ -56,6 +56,7 @@
 
                 let div = document.querySelector('.todos');
                 let p = document.createElement('p');
+
                 p.classList.add('word');
                 p.innerHTML = input.value;
                 input.value = '';
