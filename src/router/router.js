@@ -17,7 +17,8 @@ let router = new Router({
         {
             path: '/note',
             name: 'note',
-            component: vNote
+            component: vNote,
+            props: true
         }
     ]
 });

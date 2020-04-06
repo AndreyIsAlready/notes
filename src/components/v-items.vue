@@ -1,5 +1,5 @@
 <template>
-    <div class="v-items" @click="pageNote(note_data.id)">
+    <div class="v-items">
         <b><p class="title">{{note_data.title}}</p></b>
         <div
                 v-for="(todo, index) in note_data.todo"
@@ -12,7 +12,7 @@
         </div>
 
         <router-link class="link" :to="{name: 'note'}">
-            <button class="btn edit">Редактировать</button>
+            <button class="btn edit" @click="pageNote(note_data.id)">Редактировать</button>
         </router-link>
 
         <button class="btn remove" @click="remove(note_data.id)">Удалить</button>
@@ -42,7 +42,7 @@
             ]),
 
             pageNote(id) {
-                this.FIND_NOTE(id)
+                this.FIND_NOTE(id);
             },
 
             remove(id) {

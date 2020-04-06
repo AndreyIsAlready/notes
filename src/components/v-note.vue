@@ -68,7 +68,6 @@
                 'EDIT_NOTE'
             ]),
             completed (event, index) {
-                console.log(index);
                 let checkbox = event.target;
 
                 let idsAndCheck = {
@@ -122,21 +121,24 @@
                 localStorage.removeItem(String(note.id));
                 localStorage.setItem(String(note.id), json);
                 this.EDIT_NOTE({id: note.id, todo:note.todo});
+                location.href = '/'
             },
             edit (index) {
-                console.log(index)
+                index;
+               // console.log(index)
             }
         },
-        updated() {
+        mounted() {
                 let checkboxs = document.querySelectorAll('.checkbox');
+                let i = 0;
 
                 for (let checkBox of checkboxs) {
-                    if (checkBox.checked) {
+                    if (this.NOTE.todo[i][1]) {
                         checkBox.parentNode.childNodes[0].classList.add('completed');
                     }
+                    i++;
                 }
-                console.log(1)
-        }
+        },
     }
 </script>
 
