@@ -116,8 +116,8 @@
             save () {
                 let todo = this.NOTE.todo;
                 let i = 0;
-                let checkboxs = document.querySelectorAll('.checkbox');
-                for (let checkbox of checkboxs) {
+                let checkboxList = document.querySelectorAll('.checkbox');
+                for (let checkbox of checkboxList) {
                     todo[i][1] = checkbox.checked;
                     i++
                 }
@@ -133,6 +133,7 @@
             removeEditNote () {
                 let spanList = document.querySelectorAll('.CancelEditSpan');
                 let checkboxList = document.querySelectorAll('.CancelEditCheckbox');
+                let inputList = document.querySelectorAll('.input');
 
                 let oldNote = JSON.stringify( this._createNote(this.NOTE.id, this.NOTE.title, this.NOTE.todo));
                 localStorage.setItem('oldNote', oldNote);
@@ -140,7 +141,7 @@
                 this.REMOVE_EDIT_NOTE();
 
                 for (let i = 0; i < spanList.length; i++) {
-
+                    inputList[i].childNodes[0].value = '';
                     if (this.NOTE.todo[i]) {
                         spanList[i].innerHTML = this.NOTE.todo[i][0];
                         checkboxList[i].checked = this.NOTE.todo[i][1];
@@ -183,7 +184,7 @@
                 localStorage.removeItem('oldNote');
             },
             deleteTodo(index) {
-                this.DELETE_TODO(index)
+                this.DELETE_TODO(index);
             },
             edit (index) {
                 document.querySelectorAll('.label')[index].style = 'display: none';
@@ -195,23 +196,11 @@
             },
             editSpan (event, index) {
                 let label = document.querySelectorAll('.label')[index];
-                let spanList = document.querySelectorAll('.CancelEditSpan');
-                let checkboxList = document.querySelectorAll('.CancelEditCheckbox');
 
                 event.target.parentNode.style = 'display: none';
                 label.style = 'display: true';
                 let span = label.querySelector('span');
                 span.innerHTML = event.target.value;
-
-                let todo = [];
-
-                for (let i = 0; i < spanList.length; i++) {
-                    todo.push([spanList[i].innerHTML, checkboxList[i].checked])
-                }
-
-                let note = JSON.stringify(this._createNote(this.NOTE.id, this.NOTE.title, todo));
-                localStorage.setItem('note', note);
-                this.REMOVE_EDIT_NOTE();
             },
             _createNote(id, title, todo) {
                 return {
@@ -237,16 +226,22 @@
         },
         updated() {
             let checkboxList = document.querySelectorAll('.checkbox');
+            let inputList = document.querySelectorAll('.input');
+
             let i = 0;
 
             for (let checkBox of checkboxList) {
+                let value = (inputList[i].childNodes[0].value === '') ? this.NOTE.todo[i][0] : inputList[i].childNodes[0].value;
+
                 if (this.NOTE.todo[i][1]) {
                     checkBox.parentNode.childNodes[0].classList.add('completed');
+                    checkBox.parentNode.childNodes[0].innerHTML = value;
                     i++;
                     continue;
                 }
                 checkBox.checked = false;
                 checkBox.parentNode.childNodes[0].classList.remove('completed');
+                checkBox.parentNode.childNodes[0].innerHTML = value;
                 i++;
             }
         }
