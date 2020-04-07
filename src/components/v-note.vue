@@ -133,12 +133,13 @@
             removeEditNote () {
                 let spanList = document.querySelectorAll('.CancelEditSpan');
                 let checkboxList = document.querySelectorAll('.CancelEditCheckbox');
-                let todo = [];
+
+                let oldNote = JSON.stringify( this._createNote(this.NOTE.id, this.NOTE.title, this.NOTE.todo));
+                localStorage.setItem('oldNote', oldNote);
 
                 this.REMOVE_EDIT_NOTE();
 
                 for (let i = 0; i < spanList.length; i++) {
-                    todo.push([spanList[i].innerHTML, checkboxList[i].checked]);
 
                     if (this.NOTE.todo[i]) {
                         spanList[i].innerHTML = this.NOTE.todo[i][0];
@@ -152,10 +153,7 @@
                     spanList[i].classList.remove('completed');
                 }
 
-
-                let oldNote = JSON.stringify( this._createNote(this.NOTE.id, this.NOTE.title, todo));
                 document.querySelector('#editNote').disabled = false;
-                localStorage.setItem('oldNote', oldNote);
             },
             remove(id) {
                 this.FIND_NOTE(id);
@@ -224,16 +222,34 @@
             }
         },
         mounted() {
-                let checkboxs = document.querySelectorAll('.checkbox');
-                let i = 0;
+            let checkboxList = document.querySelectorAll('.checkbox');
+            let i = 0;
 
-                for (let checkBox of checkboxs) {
-                    if (this.NOTE.todo[i][1]) {
-                        checkBox.parentNode.childNodes[0].classList.add('completed');
-                    }
+            for (let checkBox of checkboxList) {
+                if (this.NOTE.todo[i][1]) {
+                    checkBox.parentNode.childNodes[0].classList.add('completed');
                     i++;
+                    continue
                 }
+                checkBox.parentNode.childNodes[0].classList.remove('completed');
+                i++;
+            }
         },
+        updated() {
+            let checkboxList = document.querySelectorAll('.checkbox');
+            let i = 0;
+
+            for (let checkBox of checkboxList) {
+                if (this.NOTE.todo[i][1]) {
+                    checkBox.parentNode.childNodes[0].classList.add('completed');
+                    i++;
+                    continue;
+                }
+                checkBox.checked = false;
+                checkBox.parentNode.childNodes[0].classList.remove('completed');
+                i++;
+            }
+        }
     }
 </script>
 

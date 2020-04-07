@@ -72,7 +72,7 @@ let store = new Vuex.Store({
             }
         },
         REMOVE_EDIT_NOTE: (state) => {
-            state.note.todo = JSON.parse(localStorage.getItem('note')).todo;
+            state.note = JSON.parse(localStorage.getItem('note'));
         },
         SET_OLD_NOTE: (state) => {
             state.note = JSON.parse(localStorage.getItem('oldNote'));
