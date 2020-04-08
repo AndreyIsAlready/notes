@@ -59,7 +59,8 @@
         props: {},
         data() {
             return {
-                note: this.NOTE
+                note: this.NOTE,
+                values: [],
             };
         },
         computed: {
@@ -117,8 +118,10 @@
                 let todo = this.NOTE.todo;
                 let i = 0;
                 let checkboxList = document.querySelectorAll('.checkbox');
+                let spanList = document.querySelectorAll('.CancelEditSpan');
                 for (let checkbox of checkboxList) {
                     todo[i][1] = checkbox.checked;
+                    todo[i][0] = spanList[i].innerHTML;
                     i++
                 }
 
@@ -135,8 +138,18 @@
                 let checkboxList = document.querySelectorAll('.CancelEditCheckbox');
                 let inputList = document.querySelectorAll('.input');
 
-                let oldNote = JSON.stringify( this._createNote(this.NOTE.id, this.NOTE.title, this.NOTE.todo));
-                localStorage.setItem('oldNote', oldNote);
+                let oldNote = this._createNote(this.NOTE.id, this.NOTE.title, this.NOTE.todo);
+
+                for (let i = 0; i < spanList.length; i++) {
+                    oldNote.todo[i][0] = spanList[i].innerHTML;
+                    oldNote.todo[i][1] = checkboxList[i].checked;
+                }
+
+                if (!spanList.length) {
+                    oldNote.todo = [];
+                }
+
+                localStorage.setItem('oldNote', JSON.stringify(oldNote));
 
                 this.REMOVE_EDIT_NOTE();
 
@@ -185,14 +198,16 @@
             },
             deleteTodo(index) {
                 this.DELETE_TODO(index);
+                let input = document.querySelectorAll('.input')[index].childNodes[0];
+                input.value = '';
             },
             edit (index) {
-                document.querySelectorAll('.label')[index].style = 'display: none';
+                let lable = document.querySelectorAll('.label')[index];
+                lable.style = 'display: none';
                 let input = document.querySelectorAll('.input')[index];
 
                 input.style = 'display: inline';
-                input.children[0].value = this.NOTE.todo[index][0];
-
+                input.children[0].value = lable.querySelector('span').innerHTML;
             },
             editSpan (event, index) {
                 let label = document.querySelectorAll('.label')[index];
@@ -200,7 +215,9 @@
                 event.target.parentNode.style = 'display: none';
                 label.style = 'display: true';
                 let span = label.querySelector('span');
+                this.values.push([event.target.value, index, span.innerHTML]);
                 span.innerHTML = event.target.value;
+                event.target.value = '';
             },
             _createNote(id, title, todo) {
                 return {
@@ -226,14 +243,18 @@
         },
         updated() {
             let checkboxList = document.querySelectorAll('.checkbox');
-            let inputList = document.querySelectorAll('.input');
-
             let i = 0;
 
             for (let checkBox of checkboxList) {
-                let value = (inputList[i].childNodes[0].value === '') ? this.NOTE.todo[i][0] : inputList[i].childNodes[0].value;
+                let value = this.NOTE.todo[i][0];
+                for (let val of this.values) {
+                    if (val[2] === value) {
+                        value = val[0]
+                    }
+                }
 
                 if (this.NOTE.todo[i][1]) {
+                    checkBox.checked = true;
                     checkBox.parentNode.childNodes[0].classList.add('completed');
                     checkBox.parentNode.childNodes[0].innerHTML = value;
                     i++;

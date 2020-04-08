@@ -76,6 +76,7 @@ let store = new Vuex.Store({
         },
         SET_OLD_NOTE: (state) => {
             state.note = JSON.parse(localStorage.getItem('oldNote'));
+            console.log(state.note)
         },
         DELETE_TODO: (state, index) => {
             state.note.todo.splice(index, 1);
