@@ -134,6 +134,7 @@
                 this.EDIT_NOTE({id: note.id, todo:note.todo});
             },
             removeEditNote () {
+                this.values = [];
                 let spanList = document.querySelectorAll('.CancelEditSpan');
                 let checkboxList = document.querySelectorAll('.CancelEditCheckbox');
                 let inputList = document.querySelectorAll('.input');
@@ -199,6 +200,11 @@
             deleteTodo(index) {
                 this.DELETE_TODO(index);
                 let input = document.querySelectorAll('.input')[index].childNodes[0];
+                for (let i = 0; i < this.values.length; i++) {
+                    if (input.value === this.values[i][0]) {
+                        this.values.splice(i, 1);
+                    }
+                }
                 input.value = '';
             },
             edit (index) {
